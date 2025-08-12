@@ -1,0 +1,49 @@
+%{
+/* C prologue: headers and helper code */
+#include <stdio.h>
+#include <stdlib.h>
+
+/* If you want numeric token constants for a parser, define them here:
+   #define NUMBER  257
+   #define PLUS    '+'
+   ...
+*/
+%}
+
+/* Don't require yylex() wrapper */
+%option noyywrap
+
+/* named patterns */
+DIGIT   [0-9]
+NUMBER  {DIGIT}+(\.{DIGIT}+)?
+
+%%
+
+[ \t\r]+           { /* ignore spaces/tabs */ }
+
+\n                 { /* keep newlines if you need them (here: ignore) */ }
+
+{NUMBER}           { printf("NUMBER\t%s\n", yytext); }
+
+"+"                { printf("PLUS\t+\n"); }
+"-"                { printf("MINUS\t-\n"); }
+"*"                { printf("MUL\t*\n"); }
+"/"                { printf("DIV\t/\n"); }
+
+"("                { printf("LPAREN\t(\n"); }
+")"                { printf("RPAREN\t)\n"); }
+
+/* If you want to support unary +/-, that is typically handled in parser.
+   Lexer just returns the '-' or '+' token like above. */
+
+.                  { /* any other single char = invalid */ 
+                      printf("INVALID\t%s\n", yytext); 
+                    }
+
+%%
+
+int main(int argc, char **argv) {
+    printf("Enter expression (Ctrl+D to finish on UNIX / Ctrl+Z then Enter on Windows):\n");
+    yylex();
+    return 0;
+}

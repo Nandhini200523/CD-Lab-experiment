@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+int isValidExpression(const char *expr) {
+    int expectOperand = 1;
+    int parenCount = 0;
+
+    for (int i = 0; expr[i] != '\0'; i++) {
+        char ch = expr[i];
+
+
+        if (isspace(ch))
+            continue;
+
+        if (expectOperand) {
+            if (isdigit(ch)) {
+
+                while (isdigit(expr[i + 1]) || expr[i + 1] == '.')
+                    i++;
+                expectOperand = 0;
+            }
+            else if (ch == '(') {
+                parenCount++;
+            }
+            else if (ch == '+' || ch == '-') {
+
+                continue;
+            }
+            else {
+                return 0;
+            }
+        } else {
+            if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+                expectOperand = 1;
+            }
+            else if (ch == ')') {
+                parenCount--;
+                if (parenCount < 0) return 0;
+            }
+            else {
+                return 0;
+            }
+        }
+    }
+
+
+    return (expectOperand == 0 && parenCount == 0);
+}
+
+int main() {
+    char expr[200];
+
+    printf("Enter an arithmetic expression: ");
+    fgets(expr, sizeof(expr), stdin);
+
+
+    expr[strcspn(expr, "\n")] = '\0';
+
+    if (isValidExpression(expr))
+        printf("Valid arithmetic expression.\n");
+    else
+        printf("Invalid arithmetic expression.\n");
+
+    return 0;
+}
